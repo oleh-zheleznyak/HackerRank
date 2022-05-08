@@ -3,54 +3,68 @@ public class ReverseMatrixToMaximizeSum
 {
     public int FindMaxSum(List<List<int>> matrix)
     {
-        if (matrix is null) throw new ArgumentNullException(nameof(matrix));
+        if (matrix == null) throw new ArgumentNullException(nameof(matrix));
         if (matrix.Count == 0) throw new ArgumentException("Matrix is empty", nameof(matrix));
         if (matrix.Count % 2 == 1) throw new ArgumentException("Matrix should have even number of rows and columns", nameof(matrix));
 
-        var normal = FindMaxSumByExpandingRows(matrix, 0, false);
-        var inverse = FindMaxSumByExpandingRows(matrix, 0, true);
-        var maxSum = Math.Max(normal, inverse);
+        var maxSum = FindMaxSumByExpandingRows(matrix);
         return maxSum;
     }
 
-    private int FindMaxSumByExpandingRows(List<List<int>> matrix, int row, bool inverse)
+    private int FindMaxSumByExpandingRows(List<List<int>> matrix)
     {
-        if (row == matrix.Count)
-        {
-            var normalCol = FindMaxSumByExpandingColumns(matrix, 0, false);
-            var inversedCol = FindMaxSumByExpandingColumns(matrix, 0, true);
-            var maxSumCol = Math.Max(normalCol, inversedCol);
+        var sums = new int[] {
+        FlipColumnsBySum(matrix),
+        FlipRowsBySum(matrix),
+        FlipColumnsBySum(matrix),
+        FlipRowsBySum(matrix),
+        };
 
-            return maxSumCol;
-        }
-
-        if (inverse) InverseRow(matrix, row);
-
-        var normal = FindMaxSumByExpandingRows(matrix, row + 1, false);
-        var inversed = FindMaxSumByExpandingRows(matrix, row + 1, true);
-        var maxSum = Math.Max(normal, inversed);
-
-        if (inverse) InverseRow(matrix, row);
-
-        return maxSum;
+        return sums.Max();
     }
 
-    private int FindMaxSumByExpandingColumns(List<List<int>> matrix, int column, bool inverse)
+    private int FlipColumnsBySum(List<List<int>> matrix)
     {
-        if (column == matrix.Count)
+        for (var col = 0; col < matrix.Count; col++)
         {
-            return SumFirstQuadrant(matrix);
+            var (left, right) = SumColumn(matrix, col);
+            if (left < right) InverseColumn(matrix, col);
         }
+        return SumFirstQuadrant(matrix);
+    }
 
-        if (inverse) InverseColumn(matrix, column);
+    private int FlipRowsBySum(List<List<int>> matrix)
+    {
+        for (var row = 0; row < matrix.Count; row++)
+        {
+            var (left, right) = SumRow(matrix, row);
+            if (left < right) InverseRow(matrix, row);
+        }
+        return SumFirstQuadrant(matrix);
+    }
 
-        var normal = FindMaxSumByExpandingColumns(matrix, column + 1, false);
-        var inversed = FindMaxSumByExpandingColumns(matrix, column + 1, true);
-        var maxSum = Math.Max(normal, inversed);
+    private (int leftSum, int rightSum) SumRow(List<List<int>> matrix, int row)
+    {
+        var n = matrix.Count / 2;
+        var (left, right) = (0, 0);
+        for (var col = 0; col < n; col++)
+        {
+            left += matrix[row][col];
+            right += matrix[row][n + col];
+        }
+        return (left, right);
+    }
 
-        if (inverse) InverseColumn(matrix, column);
-
-        return maxSum;
+    private (int leftSum, int rightSum) SumColumn(List<List<int>> matrix, int column)
+    {
+        var n = matrix.Count / 2;
+        var (top, bottom) = (0, 0);
+        for (var row = 0; row < n; row++)
+        {
+            top += matrix[row][column];
+            bottom += matrix[n + row][column];
+        }
+        return (top, bottom);
     }
 
     private int SumFirstQuadrant(List<List<int>> matrix)

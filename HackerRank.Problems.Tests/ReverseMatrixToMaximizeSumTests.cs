@@ -20,6 +20,9 @@ public class ReverseMatrixToMaximizeSumTests
         yield return TwoByTwo();
         yield return FourByFour();
         yield return FourByFourTestCase0();
+        yield return FourByFourTestCase7();
+        yield return FourByFourReversed();
+        yield return FourByFourMixed();
     }
 
     private static object[] TwoByTwo() =>
@@ -56,22 +59,40 @@ public class ReverseMatrixToMaximizeSumTests
          414
     };
 
-        private static object[] FourByFourTestCase1() =>
+        private static object[] FourByFourTestCase7() =>
      new object[]
     {
          new List<List<int>> {
-             new List<int> {114,108,83,119},
-             new List<int> {101,125,56,78},
-             new List<int> {56,43,15,49},
-             new List<int> {62,98,112,42}
+             new List<int> {107,54,128,15},
+             new List<int> {12,75,110,138},
+             new List<int> {100,96,34,85},
+             new List<int> {75,15,28,112}
          },
          414
     };
+
+    private static object[] FourByFourReversed() =>
+     new object[]
+    {
+         new List<List<int>> {
+             new List<int> {1,1,1,1},
+             new List<int> {1,1,1,1},
+             new List<int> {1,1,9,9},
+             new List<int> {1,1,9,9}
+         },
+         36
+    };
+
+        private static object[] FourByFourMixed() =>
+     new object[]
+    {
+         new List<List<int>> {
+             new List<int> {1,1,1,2},
+             new List<int> {1,1,1,1},
+             new List<int> {1,4,1,1},
+             new List<int> {3,1,1,1}
+         },
+         3+4+1+1
+    };
+
 }
-// reverse row 3
-// reverse row 2
-// reverse cpol 0
-// reverse row 0
-// reverse row 3
-// reverse col 3
-// reverse row 0
