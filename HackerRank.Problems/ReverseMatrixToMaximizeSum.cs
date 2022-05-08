@@ -7,20 +7,36 @@ public class ReverseMatrixToMaximizeSum
         if (matrix.Count == 0) throw new ArgumentException("Matrix is empty", nameof(matrix));
         if (matrix.Count % 2 == 1) throw new ArgumentException("Matrix should have even number of rows and columns", nameof(matrix));
 
-        var maxSum = FindMaxSumByExpandingRows(matrix);
+        var maxSum = FindMaxSumByExpandingRows(matrix, 0);
         return maxSum;
     }
 
-    private int FindMaxSumByExpandingRows(List<List<int>> matrix)
+    private int FindMaxSumByExpandingRows(List<List<int>> matrix, int attempts)
     {
-        var sums = new int[] {
-        FlipColumnsBySum(matrix),
-        FlipRowsBySum(matrix),
-        FlipColumnsBySum(matrix),
-        FlipRowsBySum(matrix),
-        };
+        var n = matrix.Count / 2;
+        if (attempts >= 2 * n) return 0;
 
-        return sums.Max();
+        var maxSum = 0;
+        for (var i = 0; i < 4 * n; i++)
+        {
+            FlipRowOrColumn(matrix, i);
+
+            var sum = SumFirstQuadrant(matrix);
+            maxSum = Math.Max(sum, maxSum);
+
+            var recursiveSum = FindMaxSumByExpandingRows(matrix, attempts+1);
+            maxSum = Math.Max(recursiveSum, maxSum);
+
+            FlipRowOrColumn(matrix, i);
+        }
+        return maxSum;
+    }
+
+    private void FlipRowOrColumn(List<List<int>> matrix, int index)
+    {
+        var flipRows = index < matrix.Count;
+        if (flipRows) InverseRow(matrix, index);
+        else InverseColumn(matrix, index - matrix.Count);
     }
 
     private int FlipColumnsBySum(List<List<int>> matrix)
