@@ -68,7 +68,7 @@ public class ReverseMatrixToMaximizeSumTests
              new List<int> {100,96,34,85},
              new List<int> {75,15,28,112}
          },
-         414
+         488
     };
 
     private static object[] FourByFourReversed() =>
