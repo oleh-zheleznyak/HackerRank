@@ -1,5 +1,5 @@
 ﻿namespace HackerRank.Problems;
-public class ReverseMatrixToMaximizeSum
+public class FlipMatrixRowsToMaximizeSumBruteForce
 {
     public int FindMaxSum(List<List<int>> matrix)
     {
@@ -7,7 +7,7 @@ public class ReverseMatrixToMaximizeSum
         if (matrix.Count == 0) throw new ArgumentException("Matrix is empty", nameof(matrix));
         if (matrix.Count % 2 == 1) throw new ArgumentException("Matrix should have even number of rows and columns", nameof(matrix));
 
-        var maxSum = FindMaxSumByExpandingRows(matrix, 0);
+        var maxSum = FindMaxSumByExpandingRows(matrix,0);
         return maxSum;
     }
 
@@ -24,7 +24,7 @@ public class ReverseMatrixToMaximizeSum
             var sum = SumFirstQuadrant(matrix);
             maxSum = Math.Max(sum, maxSum);
 
-            var recursiveSum = FindMaxSumByExpandingRows(matrix, attempts+1);
+            var recursiveSum = FindMaxSumByExpandingRows(matrix, attempts + 1);
             maxSum = Math.Max(recursiveSum, maxSum);
 
             FlipRowOrColumn(matrix, i);
@@ -37,50 +37,6 @@ public class ReverseMatrixToMaximizeSum
         var flipRows = index < matrix.Count;
         if (flipRows) InverseRow(matrix, index);
         else InverseColumn(matrix, index - matrix.Count);
-    }
-
-    private int FlipColumnsBySum(List<List<int>> matrix)
-    {
-        for (var col = 0; col < matrix.Count; col++)
-        {
-            var (left, right) = SumColumn(matrix, col);
-            if (left < right) InverseColumn(matrix, col);
-        }
-        return SumFirstQuadrant(matrix);
-    }
-
-    private int FlipRowsBySum(List<List<int>> matrix)
-    {
-        for (var row = 0; row < matrix.Count; row++)
-        {
-            var (left, right) = SumRow(matrix, row);
-            if (left < right) InverseRow(matrix, row);
-        }
-        return SumFirstQuadrant(matrix);
-    }
-
-    private (int leftSum, int rightSum) SumRow(List<List<int>> matrix, int row)
-    {
-        var n = matrix.Count / 2;
-        var (left, right) = (0, 0);
-        for (var col = 0; col < n; col++)
-        {
-            left += matrix[row][col];
-            right += matrix[row][n + col];
-        }
-        return (left, right);
-    }
-
-    private (int leftSum, int rightSum) SumColumn(List<List<int>> matrix, int column)
-    {
-        var n = matrix.Count / 2;
-        var (top, bottom) = (0, 0);
-        for (var row = 0; row < n; row++)
-        {
-            top += matrix[row][column];
-            bottom += matrix[n + row][column];
-        }
-        return (top, bottom);
     }
 
     private int SumFirstQuadrant(List<List<int>> matrix)
