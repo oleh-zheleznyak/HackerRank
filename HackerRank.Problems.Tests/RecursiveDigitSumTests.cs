@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
+﻿using Xunit;
 
 namespace HackerRank.Problems.Tests
 {
@@ -14,6 +9,7 @@ namespace HackerRank.Problems.Tests
         [InlineData("11", 1, 2)]
         [InlineData("1", 2, 2)]
         [InlineData(" 9875", 4, 8)]
+        [InlineData("1000000", 100, 1)]
         public void SuperDigitTest(string numberAsDirtyString, int timesToRepeat, int expectedSuperDigit)
         {
             var sut = new RecursiveDigitSum();
