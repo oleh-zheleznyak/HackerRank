@@ -1,55 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace HackerRank.Problems;
 
-namespace HackerRank.Problems
+class Result
 {
-
-    class Result
+    public static int superDigit(string n, int k)
     {
-        public static int superDigit(string n, int k)
-        {
-            return new RecursiveDigitSum().SuperDigit(n, k);
-        }
+        return new RecursiveDigitSum().SuperDigit(n, k);
+    }
+}
+
+
+public class RecursiveDigitSum
+{
+    public int SuperDigit(string numberAsDirtyString, uint timesToRepeat)
+    {
+        var normalizedString = numberAsDirtyString.Trim();
+        var sum = CalculateInitialSum(normalizedString);
+        var result = SuperDigit(sum * timesToRepeat);
+        return (int)result;
     }
 
-
-    public class RecursiveDigitSum
+    private uint CalculateInitialSum(string x)
     {
-        public int SuperDigit(string numberAsDirtyString, uint timesToRepeat)
+        if (x.Length  == 1) return uint.Parse(x);
+        uint sum = 0;
+        foreach(var c in x)
         {
-            var normalizedString = numberAsDirtyString.Trim();
-            var sum = CalculateInitialSum(normalizedString);
-            var result = SuperDigit(sum * timesToRepeat);
-            return (int)result;
+            byte digit = (byte)(c - '0');
+            sum += digit;
         }
+        return sum;
+    }
 
-        private uint CalculateInitialSum(string x)
+    private ulong SuperDigit(ulong x)
+    {
+        if (x< 10) return x;
+        ulong sum = 0;
+        while (x>0)
         {
-            if (x.Length  == 1) return uint.Parse(x);
-            uint sum = 0;
-            foreach(var c in x)
-            {
-                byte digit = (byte)(c - '0');
-                sum += digit;
-            }
-            return sum;
+            byte digit = (byte)(x % 10);
+            sum += digit;
+            x /= 10;
         }
-
-        private ulong SuperDigit(ulong x)
-        {
-            if (x< 10) return x;
-            ulong sum = 0;
-            while (x>0)
-            {
-                byte digit = (byte)(x % 10);
-                sum += digit;
-                x /= 10;
-            }
-            return SuperDigit(sum);
-        }
+        return SuperDigit(sum);
     }
 }
