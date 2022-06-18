@@ -22,24 +22,36 @@ namespace HackerRank.Problems
         public int SuperDigit(string numberAsDirtyString, int timesToRepeat)
         {
             var fullDigit = CleanNumberString(numberAsDirtyString, timesToRepeat);
-            var result = (int)SuperDigit(fullDigit);
-            return result;
+            var result = SuperDigit(fullDigit);
+            return (int)result;
         }
 
-        private BigInteger CleanNumberString(string numberAsDirtyString, int timesToRepeat)
+        private string CleanNumberString(string numberAsDirtyString, int timesToRepeat)
         {
             var normalizedString = numberAsDirtyString.Trim();
-            var fullDigit = BigInteger.Parse(string.Concat(Enumerable.Repeat(normalizedString, timesToRepeat)));
+            var fullDigit = string.Concat(Enumerable.Repeat(normalizedString, timesToRepeat));
             return fullDigit;
         }
 
-        private long SuperDigit(BigInteger x)
+        private ulong SuperDigit(string x)
         {
-            if (x < 10) return (long)x;
-            long sum = 0;
-            while (x > 0)
+            if (x.Length  == 1) return ulong.Parse(x);
+            ulong sum = 0;
+            foreach(var c in x)
             {
-                long digit = (long)BigInteger.ModPow( x , 1, 10);
+                byte digit = (byte)(c - '0');
+                sum += digit;
+            }
+            return SuperDigit(sum);
+        }
+
+        private ulong SuperDigit(ulong x)
+        {
+            if (x< 10) return x;
+            ulong sum = 0;
+            while (x>0)
+            {
+                byte digit = (byte)(x % 10);
                 sum += digit;
                 x /= 10;
             }
