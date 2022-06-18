@@ -19,30 +19,24 @@ namespace HackerRank.Problems
 
     public class RecursiveDigitSum
     {
-        public int SuperDigit(string numberAsDirtyString, int timesToRepeat)
+        public int SuperDigit(string numberAsDirtyString, uint timesToRepeat)
         {
-            var fullDigit = CleanNumberString(numberAsDirtyString, timesToRepeat);
-            var result = SuperDigit(fullDigit);
+            var normalizedString = numberAsDirtyString.Trim();
+            var sum = CalculateInitialSum(normalizedString);
+            var result = SuperDigit(sum * timesToRepeat);
             return (int)result;
         }
 
-        private string CleanNumberString(string numberAsDirtyString, int timesToRepeat)
+        private uint CalculateInitialSum(string x)
         {
-            var normalizedString = numberAsDirtyString.Trim();
-            var fullDigit = string.Concat(Enumerable.Repeat(normalizedString, timesToRepeat));
-            return fullDigit;
-        }
-
-        private ulong SuperDigit(string x)
-        {
-            if (x.Length  == 1) return ulong.Parse(x);
-            ulong sum = 0;
+            if (x.Length  == 1) return uint.Parse(x);
+            uint sum = 0;
             foreach(var c in x)
             {
                 byte digit = (byte)(c - '0');
                 sum += digit;
             }
-            return SuperDigit(sum);
+            return sum;
         }
 
         private ulong SuperDigit(ulong x)
