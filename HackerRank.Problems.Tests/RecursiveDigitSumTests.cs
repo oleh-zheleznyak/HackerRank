@@ -11,7 +11,7 @@ namespace HackerRank.Problems.Tests
         [InlineData(" 9875", 4, 8)]
         [InlineData("1000000", 100, 1)]
         [InlineData("999999999999999999999999", 100000, 9)]
-        public void SuperDigitTest(string numberAsDirtyString, int timesToRepeat, int expectedSuperDigit)
+        public void SuperDigitTest(string numberAsDirtyString, uint timesToRepeat, int expectedSuperDigit)
         {
             var sut = new RecursiveDigitSum();
             var actual = sut.SuperDigit(numberAsDirtyString, timesToRepeat);
