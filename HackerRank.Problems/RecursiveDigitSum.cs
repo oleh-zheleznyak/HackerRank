@@ -4,7 +4,7 @@ class Result
 {
     public static int superDigit(string n, int k)
     {
-        return new RecursiveDigitSum().SuperDigit(n, k);
+        return new RecursiveDigitSum().SuperDigit(n, (uint)k); // 1<=k<=10^5 according to task description
     }
 }
 
