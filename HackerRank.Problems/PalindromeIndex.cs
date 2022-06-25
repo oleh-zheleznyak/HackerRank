@@ -9,72 +9,53 @@ class Result
 
 public class PalindromeIndex : IPalindromeIndex
 {
+    private enum SearchResult : byte
+    {
+        NotFound = 0,
+        AlreadyPalindrome = 1,
+        SpecificIndex = 2
+    }
+
+    private readonly record struct PalindromeSearch(SearchResult SearchResult, int Index)
+    {
+        public bool IsAPalindrome() => SearchResult == SearchResult.AlreadyPalindrome;
+    };
+
+    private static PalindromeSearch NotFound = new (SearchResult.NotFound, -1);
+    private static PalindromeSearch AlreadyAPalindrome = new(SearchResult.AlreadyPalindrome, -1);
+    private static PalindromeSearch AtIndex(int index) => new (SearchResult.SpecificIndex, index);
+
     public int FindIndexToRemove(string s)
     {
         if (s is null) throw new ArgumentNullException(nameof(s));
         if (string.IsNullOrWhiteSpace(s)) return -1;
         if (s.Length == 1) return -1;
 
-        return FindIndexToRemoveGivenValidString(s);
+        var result = FindIndexToRemove(s, 0, s.Length - 1, true);
+
+        return result.Index;
     }
 
-    private static int FindIndexToRemoveGivenValidString(string s)
+    private PalindromeSearch FindIndexToRemove(string s, int start, int end, bool noDifferencesYet)
     {
-        // example -  a b c a
-        // move from both ends
-        //   if mismatch -> look one ahead (if possible) in both directions
-        //   if at least one match proceed
-        //   if more than one diff - return false
-        //   if not possible to look ahead return true
-
-        var start = 0;
-        var end = s.Length - 1;
-        var differenceFound = false;
-        var candidateIndex = -1;
-
         while (start < end)
         {
-            if (s[start] != s[end])
-            {
-                if (differenceFound) return -1; //cbabcB
-                differenceFound = true;
-
-                if (start + 1 == end) return start; // abca -> aca
-
-                var start_plusOne_eq_end = s[start + 1] == s[end];
-                var start_eq_end_minusOne = s[start] == s[end - 1];
-
-                if (start_plusOne_eq_end && start_eq_end_minusOne)
-                {
-                    // delete first - we are equal = babcB
-                    if (s[start + 2] == s[end - 1])
-                    {
-                        candidateIndex = start;
-                        start++;
-                    }
-                    else
-                    {
-                        candidateIndex = end;
-                        end--;
-                    }
-                }
-                else if (start_plusOne_eq_end) // abcca -> acca
-                {
-                    candidateIndex = start;
-                    start++;
-                }
-                else if (start_eq_end_minusOne) // accba -> acca
-                {
-                    candidateIndex = end;
-                    end--;
-                }
-            }
-            else
+            if (s[start] == s[end])
             {
                 start++;
                 end--;
             }
+            else if (noDifferencesYet)
+            {
+                var withoutStart = FindIndexToRemove(s, start + 1, end, false);
+                var withoutEnd = FindIndexToRemove(s, start, end - 1, false);
+
+                if (withoutStart.IsAPalindrome()) return AtIndex(start);
+                else if (withoutEnd.IsAPalindrome()) return AtIndex(end);
+                else return NotFound;
+            }
+            else return NotFound;
         }
-        return candidateIndex;
+        return AlreadyAPalindrome;
     }
 }
