@@ -8,17 +8,17 @@ namespace HackerRank.Problems.Tests
     {
         [Theory]
         [MemberData(nameof(GetTestData))]
-        public void SimulateTest(int numberOfSeconts, List<string> grid, List<string> expectedResult)
+        public void SimulateTest(int numberOfSeconds, List<string> grid, List<string> expectedResult)
         {
             var sut = new BomberMan();
-            var actual = sut.Simulate(numberOfSeconts, grid);
+            var actual = sut.Simulate(numberOfSeconds, grid);
             Assert.Equal(expectedResult, actual);
         }
 
         public static IEnumerable<object[]> GetTestData()
         {
             yield return SampleTestCase0();
-           //  yield return SampleTestCase1();
+            yield return SampleTestCase1();
         }
 
         private static object[] SampleTestCase0()
