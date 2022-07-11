@@ -1,5 +1,4 @@
-﻿namespace HackerRank.Problems.Test5
-{
+﻿namespace HackerRank.Problems.Test5;
     class Result
     {
         public static List<string> bomberMan(int n, List<string> grid) =>
@@ -15,20 +14,12 @@
         public List<string> Simulate(int n, List<string> grid)
         {
             if (n <= 0) throw new ArgumentException($"{nameof(n)}<=0", nameof(n));
-            // there are only 3 possible states:
-            //  - initial - 0,
-            //  - does nothing - 1
-            // - fully filled - 2
-            // - initial reversed after explosion - 3
-            // - fully filled - 4
-            // - initial - 5
-            // fully filled - 6
-            // - initial reversed after explosion - 7
-            var k = n % 3;
-            if (k == 1) return grid;
-            if (k == 2) return Convert(FullyFilled(grid));
-            if (k == 0) return Exploded(grid);
-            return grid;
+            if (n == 1) return grid;
+            if (n % 2 == 0) return Convert(FullyFilled(grid));
+
+            var k = n % 4; // 1=initial-2=filled-3=shape1-4=filled-5=shape2-6=filled-shape1...
+            if (k == 3) return Exploded(grid); // 3=snape1 - one explosion
+            return Exploded(Exploded(grid));
         }
 
         private List<string> Exploded(List<string> grid)
@@ -85,5 +76,3 @@
             points.SelectMany(x => GoBoomInsideGrid(x, grid));
 
     }
-
-}
