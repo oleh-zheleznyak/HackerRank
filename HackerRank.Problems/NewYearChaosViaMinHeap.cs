@@ -1,8 +1,8 @@
 ﻿namespace HackerRank.Problems;
 
-public class NewYearChaos
+public class NewYearChaosViaMinHeap: INewYearChaos
 {
-    public int? CalculateNumberOfBribes(List<int> shuffeledQueue)
+    public int? CalculateNumberOfBribes(IList<int> shuffeledQueue)
     {
         var minHeap = new MinHeap<int>(shuffeledQueue.Count+1);
         minHeap.Push(shuffeledQueue[shuffeledQueue.Count - 1]);
