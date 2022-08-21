@@ -10,17 +10,20 @@ public class MaximumSubArraySumDynamicProgrammingTopDown : IMaximumSubArraySum
     {
         if (arr.Count == 0) return 0;
         if (arr.Count == 1) return arr[0];
-        var max = int.MinValue;
+        var max = arr.Max();
+        if (max < 0) return max;
+        
+        var maxSum = int.MinValue;
         var sums = CalculateTrailingSums(arr);
         var minimums = CalculateTrailingSumsMin(sums);
         var cache = new int?[arr.Count+1];
         for (int i = 0; i <= arr.Count; i++)
         {
             var maxSumAtIndex = MaxSum(arr, i, sums, minimums, cache);
-            max = Math.Max(max, maxSumAtIndex);
+            maxSum = Math.Max(maxSum, maxSumAtIndex);
         }
 
-        return max;
+        return maxSum;
     }
 
     private int MaxSum(IReadOnlyList<int> arr, int index, int[] trailingSums, int[] trailingSumMin, int?[] cache)
