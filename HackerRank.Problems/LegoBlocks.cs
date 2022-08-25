@@ -2,44 +2,55 @@ namespace HackerRank.Problems;
 
 public class LegoBlocks
 {
-    public static int[] BlockWidths = {1, 2, 3, 4};
+    private static readonly int[] BlockWidths = {1, 2, 3, 4};
 
     public int NumberOfCombinationsForWall(int height, int width)
     {
-        var rowDecompCache = new int?[width+1];
-        var result = NumberOfCombinationsForWall(height, width, rowDecompCache);
+        var rowDecompositions = CalculateRowDecompositions(width);
+        var result = NumberOfCombinationsForWall(height, width, rowDecompositions);
         return result;
     }
 
-    public int NumberOfCombinationsForWall(int height, int width,int?[] rowDecompCache)
+    private int[] CalculateRowDecompositions(int width)
     {
-        var rowDecompositions = NumberOfDecompositions(width, rowDecompCache);
-        var wallDecompositions = (int)Math.Pow(rowDecompositions, height);
+        var rowDecompCache = new int?[width + 1];
+        var rowDecompositions = Enumerable.Range(0, width+1)
+            .Select(x => NumberOfDecompositions(x, rowDecompCache))
+            .ToArray();
+        return rowDecompositions;
+    }
 
-        var sum = 0;
+    private int NumberOfCombinationsForWall(int height, int width, int[] rowDecompositionsCache)
+    {
+        var rowDecompositions = rowDecompositionsCache[width];
+        var allDecomp = (int) Math.Pow(rowDecompositions, height);
+
+        var allInvalidDecomp = 0;
         for (var i = 1; i < width; i++)
         {
-            var invalidDecompositions = NumberOfCombinationsForWall(height, width - i, rowDecompCache);
-            var multiplier = width-i >1 ?  2 : 1;
-            sum = sum + invalidDecompositions * multiplier;
+            var solidWallPrefix = NumberOfCombinationsForWall(height, i, rowDecompositionsCache);
+            // then there is a split in the wall at position between i and i+1
+            var allWallDecompositions = rowDecompositionsCache[width - i];
+            var anyWallSuffix = (int) Math.Pow(allWallDecompositions, height);
+            allInvalidDecomp += solidWallPrefix * anyWallSuffix;
         }
 
-        return wallDecompositions - sum;
+        return allDecomp - allInvalidDecomp;
     }
-    
-    private static int NumberOfDecompositions(int width, int?[] rowDecompCache)
+
+    public int NumberOfDecompositions(int width, int?[] rowDecompCache)
     {
         if (width < 0) return 0;
-        if (width==0) return 1;
+        if (width == 0) return 1;
         if (rowDecompCache[width].HasValue) return rowDecompCache[width].Value;
-        
+
         var total = 0;
         foreach (var brick in BlockWidths)
         {
             var diff = width - brick;
-            if (diff>=0)
+            if (diff >= 0)
             {
-                total = total + NumberOfDecompositions(diff,rowDecompCache); 
+                total = total + NumberOfDecompositions(diff, rowDecompCache);
             }
             else break;
         }
