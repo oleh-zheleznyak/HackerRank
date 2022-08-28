@@ -4,14 +4,13 @@ public class LegoBlocks
 {
     private static readonly int[] BlockWidths = {1, 2, 3, 4};
     private static readonly int Modulo = (int) Math.Pow(10, 9) + 7;
-    private readonly Dictionary<(int, int), int> powerModuloCache = new();
+    private readonly Dictionary<(int, int), int> _powerModuloCache = new();
 
     public int NumberOfCombinationsForWall(int height, int width)
     {
         if (height <= 0) throw new ArgumentException($"{nameof(height)} must be positive");
         if (width <= 0) throw new ArgumentException($"{nameof(width)} must be positive");
         if (width == 1) return 1;
-
         var cache = new int?[width + 1];
         var rowDecompositions = CalculateRowDecompositions(width);
         var result = NumberOfCombinationsForWall(height, width, rowDecompositions, cache);
@@ -20,11 +19,14 @@ public class LegoBlocks
 
     private int[] CalculateRowDecompositions(int width)
     {
-        var rowDecompCache = new int?[width + 1];
-        var rowDecompositions = Enumerable.Range(0, width + 1)
-            .Select(x => NumberOfDecompositions(x, rowDecompCache))
-            .ToArray();
-        return rowDecompositions;
+        checked
+        {
+            var rowDecompCache = new int?[width + 1];
+            var rowDecompositions = Enumerable.Range(0, width + 1)
+                .Select(x => NumberOfDecompositions(x, rowDecompCache))
+                .ToArray();
+            return rowDecompositions;
+        }
     }
 
     private int NumberOfCombinationsForWall(int height, int width, int[] rowDecompositionsCache, int?[] cache)
@@ -43,7 +45,7 @@ public class LegoBlocks
                 // then there is a split in the wall at position between i and i+1
                 var allWallDecompositions = rowDecompositionsCache[width - i];
                 var anyWallSuffix = PowModulo(allWallDecompositions, height);
-                allInvalidDecomp = (allInvalidDecomp + ((long)solidWallPrefix * anyWallSuffix) % Modulo) % Modulo;
+                allInvalidDecomp = (allInvalidDecomp + ((long) solidWallPrefix * anyWallSuffix) % Modulo) % Modulo;
             }
 
             var result = (int) (allDecomp - allInvalidDecomp + Modulo) % Modulo;
@@ -54,39 +56,45 @@ public class LegoBlocks
 
     private int PowModulo(int baseNum, int power)
     {
-        if (powerModuloCache.TryGetValue((baseNum, power), out var cachedValue))
-            return cachedValue;
-        
-        var result = 1L;
-        for (var i = 1; i <= power; i++)
+        checked
         {
-            result = result * baseNum % Modulo;
-        }
+            if (_powerModuloCache.TryGetValue((baseNum, power), out var cachedValue))
+                return cachedValue;
 
-        var computedValue = (int) (result + Modulo) % Modulo;
-        powerModuloCache[(baseNum, power)] = computedValue;
-        return computedValue;
+            var result = 1L;
+            for (var i = 1; i <= power; i++)
+            {
+                result = result * baseNum % Modulo;
+            }
+
+            var computedValue = (int) (result + Modulo) % Modulo;
+            _powerModuloCache[(baseNum, power)] = computedValue;
+            return computedValue;
+        }
     }
-        
+
 
     public int NumberOfDecompositions(int width, int?[] rowDecompCache)
     {
-        if (width < 0) return 0;
-        if (width == 0) return 1;
-        if (rowDecompCache[width].HasValue) return rowDecompCache[width].Value;
-
-        var total = 0;
-        foreach (var brick in BlockWidths)
+        checked
         {
-            var diff = width - brick;
-            if (diff >= 0)
-            {
-                total = total + NumberOfDecompositions(diff, rowDecompCache);
-            }
-            else break;
-        }
+            if (width < 0) return 0;
+            if (width == 0) return 1;
+            if (rowDecompCache[width].HasValue) return rowDecompCache[width].Value;
 
-        rowDecompCache[width] = total;
-        return total;
+            var total = 0;
+            foreach (var brick in BlockWidths)
+            {
+                var diff = width - brick;
+                if (diff >= 0)
+                {
+                    total = (total + NumberOfDecompositions(diff, rowDecompCache)) % Modulo;
+                }
+                else break;
+            }
+
+            rowDecompCache[width] = total;
+            return total;
+        }
     }
 }
